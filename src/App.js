@@ -166,7 +166,6 @@ export default function App() {
       let updateSessionData = sessionStorage.getItem("items").concat(nftTitle);
       sessionStorage.setItem("items", updateSessionData);
       set_Purchased_Item(sessionStorage.getItem("items"));
-      console.log(set_Purchased_Item);
       navigateToInventory();
     }
   }
