@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 import Modal from '@mui/material/Modal';
 
 export default function App() {
-  const contractAddress = "0xb0CB42d20335BdAF97E94d6BC625A4E20309e48A";
+  const contractAddress = "0x454781EcE44Fc5fCBE16146e15818Bc98A28B4D6";
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchFilteredData, setSearchFilteredData] = useState([]);
@@ -116,16 +116,40 @@ export default function App() {
   const HandleTransfer = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = await provider.getSigner();
-    const transaction = new ethers.Contract(contractAddress, SendEther, signer);
-    const transactionResult = await transaction.transfer(data.get("receiver"), ethers.parseEther(nftPrice));
+    if (window.ethereum) {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      console.log("retrieved provider");
 
-    handleClose();
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+      const transaction = new ethers.Contract(contractAddress, SendEther, signer);
+      const transactionResult = await transaction.transfer(data.get("receiver"), ethers.parseEther(nftPrice));
 
-    let fData = new FormData();
-    if (transactionResult.hash !== null) {
+      handleClose();
+
+      let fData = new FormData();
+      if (transactionResult.hash !== null) {
+        fData.append("RecipeTitle", nftTitle);
+        fData.append("User", currentUser);
+        await fetch("http://localhost/innovate_recipe/Backend/Purchase.php/", {
+          method: 'POST',
+          body: fData
+        })
+          .then((res) => res.json())
+          .then((data) => set_Purchased_Item(data))
+          .catch((err) => {
+            console.log(err.message);
+          });
+
+        fData.delete("RecipeTitle");
+        let updateSessionData = sessionStorage.getItem("items").concat(nftTitle);
+        sessionStorage.setItem("items", updateSessionData);
+        set_Purchased_Item(sessionStorage.getItem("items"));
+        navigateToInventory();
+      }
+    }
+    else {
+      let fData = new FormData();
       fData.append("RecipeTitle", nftTitle);
       fData.append("User", currentUser);
       await fetch("http://localhost/innovate_recipe/Backend/Purchase.php/", {
@@ -142,10 +166,10 @@ export default function App() {
       let updateSessionData = sessionStorage.getItem("items").concat(nftTitle);
       sessionStorage.setItem("items", updateSessionData);
       set_Purchased_Item(sessionStorage.getItem("items"));
+      console.log(set_Purchased_Item);
       navigateToInventory();
     }
   }
-
 
   const listItems = searchFilteredData.map((item, index) =>
     <Grid sx={{ display: 'flex', justifyContent: 'center', my: 3 }} key={searchFilteredData[index].ID} xs={3}>
@@ -192,18 +216,18 @@ export default function App() {
           }}>
             <form name="submitInfo" onSubmit={HandleTransfer}>
               <Box sx={{}}>
-              <input
-                type="text"
-                name="receiver"
-                className="input"
-                placeholder="Address of the NFT seller"
-              />
-              <button
-                type="submit"
-                className="btn btn-primary submit-button"
-              >
-                Submit
-              </button>
+                <input
+                  type="text"
+                  name="receiver"
+                  className="input"
+                  placeholder="Address of the NFT seller"
+                />
+                <button
+                  type="submit"
+                  className="btn btn-primary submit-button"
+                >
+                  Submit
+                </button>
               </Box>
             </form>
           </Box>

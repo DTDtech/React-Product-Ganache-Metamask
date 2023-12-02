@@ -1,3 +1,3 @@
-This project uses Ganache and Metamask for blockchain and smart contract development. Firstly, connect to a Ganache account. Then, add a network manually on Metamask with the RPC 
-Server and Network ID from the Ganache account. Then, use the solidity file "SlothCoin" from the SmartContract folder, compile and deploy it in Remix IDE using Injected Provider - 
-Metamask. Finally, copy the deployed contract address and replace it with the contractAddress constant inside App.js. You're ready.   
+This project uses Ganache and Metamask for blockchain and smart contract development. Firstly, do npm install and connect to a Ganache account. Then, add a network manually on 
+Metamask with the RPC Server and Network ID from the Ganache account. Then, use the solidity file "SlothCoin" from the SmartContract folder, compile and deploy it in Remix IDE 
+using Injected Provider - Metamask. Finally, copy the deployed contract address and replace it with the contractAddress constant inside App.js. You're ready.   
